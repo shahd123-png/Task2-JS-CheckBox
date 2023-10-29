@@ -206,6 +206,7 @@ submitButton.addEventListener("click", function (event) {
     if (atLeastOneChecked1 && atLeastOneChecked2 && atLeastOneChecked3) 
     {
         console.log("Your choices are: " + selectedValues.join(", "));
+                errorBox.style.border = "none"; 
     }
     
     else {
