@@ -1,189 +1,128 @@
-/*----------------------------------------------------select all------------------------------------------------------- */
 const selectAll = document.getElementById("select-all");
 const allCheckboxes = document.querySelectorAll(".all-list input[type='checkbox']");
-const Parent1 = document.getElementById("parent-1");
+const parent1 = document.getElementById("parent-1");
 const childCheckboxes1 = document.querySelectorAll(".child-checkbox1");
-const Parent2 = document.getElementById("parent-2");
+const parent2 = document.getElementById("parent-2");
 const childCheckboxes2 = document.querySelectorAll(".child-checkbox2");
-const Parent3 = document.getElementById("parent-3");
+const parent3 = document.getElementById("parent-3");
 const childCheckboxes3 = document.querySelectorAll(".child-checkbox3");
-
 
 selectAll.addEventListener("click", function () {
     allCheckboxes.forEach(function (checkbox) {
         checkbox.checked = selectAll.checked;
+
     });
 });
 
+handleParentCheckbox(parent1, childCheckboxes1);
+handleParentCheckbox(parent2, childCheckboxes2);
+handleParentCheckbox(parent3, childCheckboxes3);
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupChildCheckboxes(Array.from(childCheckboxes1), parent1);
+    setupChildCheckboxes(Array.from(childCheckboxes2), parent2);
+    setupChildCheckboxes(Array.from(childCheckboxes3), parent3);
+
+    for (const checkbox of childCheckboxes1) {
+        setupCheckboxListenerForCheckbox(checkbox, parent1);
+    };
+    for (const checkbox of childCheckboxes2) {
+            setupCheckboxListenerForCheckbox(checkbox, parent2);
+    };
+    for (const checkbox of childCheckboxes3) {
+        setupCheckboxListenerForCheckbox(checkbox, parent3);
+    };
+});
+
 function checkSelectAll() {
-    if (Parent1.checked && Parent2.checked && Parent3.checked) {
+    const parent1Checked = parent1.checked;
+    const parent2Checked = parent2.checked;
+    const parent3Checked = parent3.checked;
+    const allParentsChecked = parent1Checked && parent2Checked && parent3Checked;
+    if (allParentsChecked) {
         selectAll.checked = true;
+        selectAll.indeterminate = false;
+    } else if (parent1Checked || parent2Checked || parent3Checked) {
+        selectAll.indeterminate = true;
+        selectAll.checked = false;
     } else {
+        selectAll.indeterminate = false;
         selectAll.checked = false;
     }
 }
 
-function updateSelectAll() {
-    const allParentsChecked = Parent1.checked && Parent2.checked && Parent3.checked;
-    selectAll.checked = allParentsChecked;
-    selectAll.indeterminate = !allParentsChecked;
+function handleParentCheckbox(parentCheckbox, childCheckboxes) {
+    parentCheckbox.addEventListener("click", function () {
+        childCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = parentCheckbox.checked;
+        });
+        checkSelectAll();
+    });
 }
 
-/*----------------------------------------------------First Parent (Team Members) select all------------------------------------------------------- */
-//const childCheckboxes1 = document.querySelectorAll(".First-div .checkbox-list input[type='checkbox']");
-
-Parent1.addEventListener("click", function () {
-    childCheckboxes1.forEach(function (checkbox) {
-        checkbox.checked = Parent1.checked;
-        
-    });
-    checkSelectAll();
-    updateSelectAll();
-
-});
-
-/*----------------------------------------------------Seconed Parent (What To Order?) select all------------------------------------------------------- */
-Parent2.addEventListener("click", function () {
-    childCheckboxes2.forEach(function (checkbox) {
-        checkbox.checked = Parent2.checked;
-    });
-    checkSelectAll();
-    updateSelectAll();
-});
-
-/*----------------------------------------------------Third Parent (What To Drink?) select all------------------------------------------------------- */
-Parent3.addEventListener("click", function () {
-    childCheckboxes3.forEach(function (checkbox) {
-        checkbox.checked = Parent3.checked;
-    });
-    checkSelectAll();
-    updateSelectAll();
-});
-
-
-/*----------------------------------------------------select any of children put indeterminate-------------------------------------------- */
-
-document.addEventListener("DOMContentLoaded", function () {
-    childCheckboxes1.forEach(function (checkbox) {  // set up event listener on each child checkbox لكل واحد منهم 
+function setupChildCheckboxes(childCheckboxes, parentCheckbox) {
+    for (let i = 0; i < childCheckboxes.length; i++) {
+        const checkbox = childCheckboxes[i];
         checkbox.addEventListener("change", function () {
+            const allChecked = childCheckboxes.every((childCheckbox) => childCheckbox.checked);
+            const someChecked = childCheckboxes.some((childCheckbox) => childCheckbox.checked);
 
-            let allChecked = true;    // track whether all child checkboxes are checked عشان اغير حاله الاب
-            let someChecked = false; //track if at least one child checkbox is checked عشان نحط علامه الماينس
+            parentCheckbox.checked = allChecked;
+            parentCheckbox.indeterminate = someChecked && !allChecked;
 
-            childCheckboxes1.forEach(function (childCheckbox) { // track state of all child checkboxes and update two variables:
-                if (childCheckbox.checked) {
-                    someChecked = true;
-                } else {
-                    allChecked = false;
-                }
-            });
+            checkSelectAll();
+        });
+    };
+}
 
-            if (allChecked) { // if all children checked
-                Parent1.checked = true;
-                Parent1.indeterminate = false;
-                updateSelectAll();
-            }
 
-            else if (someChecked) { //at least one حط الماينس
-                Parent1.checked = false;
-                Parent1.indeterminate = true;
-                updateSelectAll();
-            }
 
-            else {
-                Parent1.checked = false;
-                Parent1.indeterminate = false;
-                updateSelectAll();
+function setupCheckboxListenerForCheckbox(checkbox, parentCheckbox) {
+    checkbox.addEventListener("change", function () {
+        let allChecked = true;
+        let someChecked = false;
+
+        const childCheckboxes = getChildCheckboxes(parentCheckbox);
+
+        childCheckboxes.forEach(function (childCheckbox) {
+            if (childCheckbox.checked) {
+                someChecked = true;
+            } else {
+                allChecked = false;
             }
         });
+
+        if (allChecked) {
+            parentCheckbox.checked = true;
+            parentCheckbox.indeterminate = false;
+        } else if (someChecked) {
+            parentCheckbox.checked = false;
+            parentCheckbox.indeterminate = true;
+        } else {
+            parentCheckbox.checked = false;
+            parentCheckbox.indeterminate = false;
+        }
+        checkSelectAll();
     });
+}
 
-    childCheckboxes2.forEach(function (checkbox) {
-        checkbox.addEventListener("change", function () {
-
-            let allChecked = true;
-            let someChecked = false;
-
-            childCheckboxes2.forEach(function (childCheckbox) {
-                if (childCheckbox.checked) {
-                    someChecked = true;
-                } else {
-                    allChecked = false;
-                }
-            });
-
-            if (allChecked) {
-                Parent2.checked = true;
-                Parent2.indeterminate = false;
-                updateSelectAll();
-
-            }
-
-            else if (someChecked) {
-                Parent2.checked = false;
-                Parent2.indeterminate = true;
-                updateSelectAll();
-
-            }
-
-            else {
-                Parent2.checked = false;
-                Parent2.indeterminate = false;
-                updateSelectAll();
-
-            }
-        });
-    });
-
-
-
-    childCheckboxes3.forEach(function (checkbox) {
-        checkbox.addEventListener("change", function () {
-
-            let allChecked = true;
-            let someChecked = false;
-
-            childCheckboxes3.forEach(function (childCheckbox) {
-                if (childCheckbox.checked) {
-                    someChecked = true;
-                } else {
-                    allChecked = false;
-                }
-            });
-
-            if (allChecked) {
-                Parent3.checked = true;
-                Parent3.indeterminate = false;
-                updateSelectAll();
-
-            }
-
-            else if (someChecked) {
-                Parent3.checked = false;
-                Parent3.indeterminate = true;
-                updateSelectAll();
-
-            }
-
-            else {
-                Parent3.checked = false;
-                Parent3.indeterminate = false;
-                updateSelectAll();
-
-            }
-            someChecked =false;
-        });
-    });
-});
-
+function getChildCheckboxes(parentCheckbox) {
+    if (parentCheckbox === parent1) {
+        return childCheckboxes1;
+    } else if (parentCheckbox === parent2) {
+        return childCheckboxes2;
+    } else if (parentCheckbox === parent3) {
+        return childCheckboxes3;
+    }
+    return [];
+}
 
 /*-----------------------------------submit information--------------------------------------- */
 const submitButton = document.querySelector(".button");
 const errorBox = document.querySelector(".all-list");
 
 submitButton.addEventListener("click", function (event) {
-    //event.preventDefault();
-
+    event.preventDefault();
     const selectedValues = [];
     let atLeastOneChecked1 = false;
     let atLeastOneChecked2 = false;
@@ -223,3 +162,5 @@ submitButton.addEventListener("click", function (event) {
 
     }
 });
+
+
