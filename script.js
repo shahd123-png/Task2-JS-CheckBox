@@ -23,14 +23,10 @@ function checkSelectAll() {
     }
 }
 
-
 function updateSelectAll() {
-    selectAll.indeterminate = Parent1.checked || Parent2.checked || Parent3.checked;
-    if (Parent1.checked && Parent2.checked && Parent3.checked) {
-        selectAll.checked = true;
-        selectAll.indeterminate=false;
-
-    }
+    const allParentsChecked = Parent1.checked && Parent2.checked && Parent3.checked;
+    selectAll.checked = allParentsChecked;
+    selectAll.indeterminate = !allParentsChecked;
 }
 
 /*----------------------------------------------------First Parent (Team Members) select all------------------------------------------------------- */
@@ -119,16 +115,22 @@ document.addEventListener("DOMContentLoaded", function () {
             if (allChecked) {
                 Parent2.checked = true;
                 Parent2.indeterminate = false;
+                updateSelectAll();
+
             }
 
             else if (someChecked) {
                 Parent2.checked = false;
                 Parent2.indeterminate = true;
+                updateSelectAll();
+
             }
 
             else {
                 Parent2.checked = false;
                 Parent2.indeterminate = false;
+                updateSelectAll();
+
             }
         });
     });
@@ -152,16 +154,22 @@ document.addEventListener("DOMContentLoaded", function () {
             if (allChecked) {
                 Parent3.checked = true;
                 Parent3.indeterminate = false;
+                updateSelectAll();
+
             }
 
             else if (someChecked) {
                 Parent3.checked = false;
                 Parent3.indeterminate = true;
+                updateSelectAll();
+
             }
 
             else {
                 Parent3.checked = false;
                 Parent3.indeterminate = false;
+                updateSelectAll();
+
             }
             someChecked =false;
         });
@@ -174,7 +182,7 @@ const submitButton = document.querySelector(".button");
 const errorBox = document.querySelector(".all-list");
 
 submitButton.addEventListener("click", function (event) {
-    event.preventDefault();
+    //event.preventDefault();
 
     const selectedValues = [];
     let atLeastOneChecked1 = false;
@@ -206,17 +214,12 @@ submitButton.addEventListener("click", function (event) {
     if (atLeastOneChecked1 && atLeastOneChecked2 && atLeastOneChecked3) 
     {
         console.log("Your choices are: " + selectedValues.join(", "));
-                errorBox.style.border = "none"; 
+        errorBox.style.border = "none"; 
     }
     
     else {
         console.log("Error: Please select at least one choice from each list.");
-        errorBox.style.border = "1px solid red"; // Add a red border when there's an error
+        errorBox.style.border = "1px solid red"; 
 
     }
 });
-
-
-
-
-
