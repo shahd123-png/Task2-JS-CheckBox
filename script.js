@@ -49,6 +49,8 @@ function checkSelectAll() {
         selectAll.indeterminate = false;
         selectAll.checked = false;
     }
+
+    
 }
 
 function handleParentCheckbox(parentCheckbox, childCheckboxes) {
